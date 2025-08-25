@@ -17,9 +17,11 @@ services:
     volumes:
       - mariadb_db:/var/lib/mysql
     environment:
-      - MARIADB_USER=kcharbon
-      - MARIADB_ROOT_PASSWORD=test42
-      - MARIADB_DATABASE=wordpress
+      - MARIADB_USER=${MARIADB_USER}
+      - MARIADB_PASSWORD=${DB_PASSWORD}
+      - MARIADB_DATABASE=${MARIADB_DATABASE}
+      - MARIADB_PASSWORD2=${DB_PASSWORD2}
+      - MARIADB_USER2=${MARIADB_USER2}
     command: ./script.sh
 
 volumes:
