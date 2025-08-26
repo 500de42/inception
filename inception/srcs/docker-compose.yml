@@ -8,6 +8,7 @@ services:
     container_name: nginx_
     ports:
       - "443:443"
+    restart : always
 
   mariadb:
     build:
@@ -16,6 +17,7 @@ services:
     container_name: mariadb_
     volumes:
       - mariadb_db:/var/lib/mysql
+    restart : always
     environment:
       - MARIADB_USER=${MARIADB_USER}
       - MARIADB_PASSWORD=${DB_PASSWORD}
