@@ -2,6 +2,8 @@ version: "3.8"
 
 services:
   nginx:
+    depends_on:
+      - wordpress
     build:
       context: ./requierements/nginx
       dockerfile: Dockerfile
@@ -26,10 +28,39 @@ services:
       - MARIADB_USER2=${MARIADB_USER2}
     command: ./script.sh
 
+  wordpress:
+    depends_on:
+      - mariadb
+    build:
+      context: ./requierements/wordpress
+      dockerfile: Dockerfile
+    container_name: wordpress_
+    restart : always
+    #ports:
+     # - ${WP_PORT}:9000
+    environment:
+      - WORDPRESS_DB_HOST=${HOST}
+      - WORDPRESS_DB_USER=${MARIADB_USER}
+      - WORDPRESS_DB_PASSWORD=${DB_PASSWORD}
+      - WORDPRESS_DB_NAME=${MARIADB_DATABASE}
+    volumes:
+      - wordpress:/var/www/html
+    command: 
+
+networks:
+  inception-net:
+    driver: bridge
+
 volumes:
   mariadb_db:
     driver: local
     driver_opts:
       type: none
       device: /home/kcharbon/data/wordpressDB
+      o: bind
+  wordpress:
+    driver: local
+    driver_opts:
+      type: none
+      device: /home/kcharbon/data/wordpressData
       o: bind
