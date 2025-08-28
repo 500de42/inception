@@ -11,6 +11,8 @@ services:
     ports:
       - "443:443"
     restart : always
+    networks:
+      - inception-net
 
   mariadb:
     build:
@@ -20,6 +22,8 @@ services:
     volumes:
       - mariadb_db:/var/lib/mysql
     restart : always
+    networks:
+      - inception-net
     environment:
       - MARIADB_USER=${MARIADB_USER}
       - MARIADB_PASSWORD=${DB_PASSWORD}
@@ -36,6 +40,8 @@ services:
       dockerfile: Dockerfile
     container_name: wordpress_
     restart : always
+    networks:
+      - inception-net
     #ports:
      # - ${WP_PORT}:9000
     environment:
@@ -45,7 +51,6 @@ services:
       - WORDPRESS_DB_NAME=${MARIADB_DATABASE}
     volumes:
       - wordpress:/var/www/html
-    command: 
 
 networks:
   inception-net:
