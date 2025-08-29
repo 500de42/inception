@@ -2,29 +2,30 @@ version: "3.8"
 
 services:
   nginx:
-    depends_on:
-      - wordpress
     build:
       context: ./requierements/nginx
       dockerfile: Dockerfile
-    container_name: nginx_
+    container_name: nginx
     ports:
       - "443:443"
     restart : always
     networks:
       - inception-net
+    depends_on:
+      - wordpress
 
   mariadb:
     build:
       context: ./requierements/mariadb
       dockerfile: Dockerfile
-    container_name: mariadb_
+    container_name: mariadb
     volumes:
       - mariadb_db:/var/lib/mysql
     restart : always
     networks:
       - inception-net
     environment:
+      - MARIADB_ROOT_PASSWORD=${MARIADB_ROOT_PASSWORD}
       - MARIADB_USER=${MARIADB_USER}
       - MARIADB_PASSWORD=${DB_PASSWORD}
       - MARIADB_DATABASE=${MARIADB_DATABASE}
@@ -38,19 +39,19 @@ services:
     build:
       context: ./requierements/wordpress
       dockerfile: Dockerfile
-    container_name: wordpress_
+    container_name: wordpress
     restart : always
     networks:
       - inception-net
-    #ports:
-     # - ${WP_PORT}:9000
     environment:
-      - WORDPRESS_DB_HOST=${HOST}
+      - WORDPRESS_DB_HOST=mariadb
       - WORDPRESS_DB_USER=${MARIADB_USER}
       - WORDPRESS_DB_PASSWORD=${DB_PASSWORD}
       - WORDPRESS_DB_NAME=${MARIADB_DATABASE}
     volumes:
       - wordpress:/var/www/html
+    ports:
+      - "${WP_PORT}:9000"
 
 networks:
   inception-net:
