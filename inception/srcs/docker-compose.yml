@@ -32,10 +32,16 @@ services:
       - MARIADB_PASSWORD2=${DB_PASSWORD2}
       - MARIADB_USER2=${MARIADB_USER2}
     command: ./script.sh
+    healthcheck:
+      test: CMD-SHELL mariadb -h localhost -u${MARIADB_USER} -p${MARIADB_PASSWORD} -e "SELECT 1;"
+      interval: 5s
+      timeout: 3s
+      retries: 5
 
   wordpress:
     depends_on:
-      - mariadb
+      mariadb :
+        conditions : service_healthy
     build:
       context: ./requierements/wordpress
       dockerfile: Dockerfile
@@ -44,7 +50,7 @@ services:
     networks:
       - inception-net
     environment:
-      - WORDPRESS_DB_HOST=mariadb
+      - WORDPRESS_DB_HOST=mariadb:3306
       - WORDPRESS_DB_USER=${MARIADB_USER}
       - WORDPRESS_DB_PASSWORD=${DB_PASSWORD}
       - WORDPRESS_DB_NAME=${MARIADB_DATABASE}
