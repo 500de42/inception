@@ -8,7 +8,7 @@ services:
     container_name: nginx
     ports:
       - "443:443"
-    restart : always
+    restart: always
     networks:
       - inception-net
     depends_on:
@@ -21,7 +21,7 @@ services:
     container_name: mariadb
     volumes:
       - mariadb_db:/var/lib/mysql
-    restart : always
+    restart: always
     networks:
       - inception-net
     environment:
@@ -32,21 +32,15 @@ services:
       - MARIADB_PASSWORD2=${DB_PASSWORD2}
       - MARIADB_USER2=${MARIADB_USER2}
     command: ./script.sh
-    healthcheck:
-      test: CMD-SHELL mariadb -h localhost -u${MARIADB_USER} -p${MARIADB_PASSWORD} -e "SELECT 1;"
-      interval: 5s
-      timeout: 3s
-      retries: 5
 
   wordpress:
     depends_on:
-      mariadb :
-        conditions : service_healthy
+      - mariadb
     build:
       context: ./requierements/wordpress
       dockerfile: Dockerfile
     container_name: wordpress
-    restart : always
+    restart: always
     networks:
       - inception-net
     environment:
