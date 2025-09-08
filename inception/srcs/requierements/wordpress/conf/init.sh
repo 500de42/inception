@@ -19,4 +19,5 @@ else
     echo "wp-config.php existe déjà, aucun changement effectué."
 fi
 
+cat wp-config.php
 php-fpm82 -F
