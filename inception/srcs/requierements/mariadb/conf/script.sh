@@ -1,5 +1,9 @@
 #!/bin/sh
 
+DB_PASSWORD=$(cat /run/secrets/DB_PASSWORD)
+DB_PASSWORD2=$(cat /run/secrets/DB_PASSWORD2)
+MARIADB_ROOT_PASSWORD=$(cat /run/secrets/MARIADB_ROOT_PASSWORD)
+
 chown -R mysql:mysql /var/lib/mysql /etc/mysql/init.sql
 chmod 750 /var/lib/mysql /etc/mysql/init.sql
 

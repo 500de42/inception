@@ -23,6 +23,10 @@ services:
     volumes:
       - mariadb_db:/var/lib/mysql
     restart: always
+    secrets:
+      - DB_PASSWORD
+      - DB_PASSWORD2
+      - MARIADB_ROOT_PASSWORD
     networks:
       - inception-net
     command: ./script.sh
@@ -36,6 +40,11 @@ services:
       dockerfile: Dockerfile
     container_name: wordpress
     restart: always
+    secrets:
+      - DB_PASSWORD
+      - DB_PASSWORD2
+      - WP_PASSWORD
+      - WP_PASSWORD2
     networks:
       - inception-net
     volumes:
@@ -46,6 +55,18 @@ services:
 networks:
   inception-net:
     driver: bridge
+
+secrets:
+  DB_PASSWORD:
+    file: ../secrets/db_password.txt
+  DB_PASSWORD2:
+    file: ../secrets/db_password2.txt
+  MARIADB_ROOT_PASSWORD:
+    file: ../secrets/mariadb_root_password.txt
+  WP_PASSWORD:
+    file: ../secrets/wp_password.txt
+  WP_PASSWORD2:
+    file: ../secrets/wp_password2.txt
 
 volumes:
   mariadb_db:

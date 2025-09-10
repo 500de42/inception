@@ -1,4 +1,11 @@
 #!/bin/bash
+
+DB_PASSWORD=$(cat /run/secrets/DB_PASSWORD)
+DB_PASSWORD2=$(cat /run/secrets/DB_PASSWORD2)
+MARIADB_ROOT_PASSWORD=$(cat /run/secrets/MARIADB_ROOT_PASSWORD)
+WP_PASSWORD=$(cat /run/secrets/WP_PASSWORD)
+WP_PASSWORD2=$(cat /run/secrets/WP_PASSWORD2)
+
 echo "DEBUG: MARIADB_USER=$MARIADB_USER, DB_PASSWORD=$DB_PASSWORD"
 # On attend que MariaDB réponde
 until mysql -h mariadb -u"$MARIADB_USER" -p"$DB_PASSWORD" -e "SELECT 1" 2>/dev/null; do
