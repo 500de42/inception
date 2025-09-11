@@ -3,8 +3,8 @@ FROM alpine:3.21
 WORKDIR /var/www/html
 RUN apk update
 RUN apk add --no-cache wget tar \
-    php82 php82-session php82-openssl php82-iconv php82-json php82-xml php82-mbstring php82-mysqli php82-curl php82-phar php82-fpm \
-    mariadb-client curl less bash && adduser -S www-data -G www-data
+    php82 php82-session php82-openssl php82-iconv php82-json php82-xml php82-mbstring php82-mysqli php82-curl php82-phar php82-fpm php82-pecl-redis\
+    mariadb-client curl bash less && adduser -S www-data -G www-data
 RUN ln -s /usr/bin/php82 /usr/bin/php
 RUN wget https://github.com/WordPress/WordPress/archive/refs/tags/6.4.3.tar.gz -O /tmp/wordpress.tar.gz && \
     tar -xzf /tmp/wordpress.tar.gz -C /var/www/html --strip-components=1 && \
