@@ -83,4 +83,3 @@ volumes:
       type: none
       device: /home/kcharbon/data/wordpressData
       o: bind
-#utiliser le dossier secret pour les mdp
