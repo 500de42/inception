@@ -2,7 +2,7 @@
 
 DB_PASSWORD=$(cat /run/secrets/DB_PASSWORD)
 DB_PASSWORD2=$(cat /run/secrets/DB_PASSWORD2)
-MARIADB_ROOT_PASSWORD=$(cat /run/secrets/MARIADB_ROOT_PASSWORD)
+MARIADB_ROOT_PASSWORD=$(cat /run/secrets/mariadb_root_password)
 
 chown -R mysql:mysql /var/lib/mysql /etc/mysql/init.sql
 chmod 750 /var/lib/mysql /etc/mysql/init.sql
@@ -20,4 +20,4 @@ if [ ! -d "/var/lib/mysql/mysql" ]; then
     mariadb-install-db --user=mysql --datadir=/var/lib/mysql
 fi
 
-mysqld --user=mysql
+mysqld

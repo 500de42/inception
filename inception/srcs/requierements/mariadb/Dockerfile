@@ -11,4 +11,4 @@ COPY    /conf/script.sh .
 RUN     chmod +x script.sh
 EXPOSE  3306
 
-CMD     ["./script.sh"]
+CMD ["/bin/sh", "-c", "script.sh"]
