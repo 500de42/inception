@@ -9,10 +9,13 @@ WP_PASSWORD=$(cat /run/secrets/WP_PASSWORD)
 WP_PASSWORD2=$(cat /run/secrets/WP_PASSWORD2)
 
 WP_PATH="/var/www/html"
+CONFIG_REDIS="/** Configuration Redis Cache */
+define('WP_REDIS_HOST', 'redis');
+define('WP_REDIS_PORT', 6379);
+define('WP_REDIS_SCHEME', 'tcp');
+define('WP_CACHE', true);"
 
 chown -R www-data:www-data $WP_PATH
-
-echo "DEBUG: MARIADB_USER=$MARIADB_USER, DB_PASSWORD=$DB_PASSWORD"
 
 # Télécharger WordPress si pas déjà présent
 if [ ! -f /var/www/html/wp-load.php ]; then
@@ -59,6 +62,27 @@ if ! wp user get "$USER_WP2" --allow-root --path="/var/www/html" &>/dev/null; th
         --user_pass=$WP_PASSWORD2 \
         --allow-root
 fi
+
+
+# Ajout config Redis dans wp-config.php si pas déjà présent
+if ! grep -q "WP_REDIS_HOST" /var/www/html/wp-config.php; then
+    awk '/require_once ABSPATH/{
+        print "/** Configuration Redis Cache */"
+        print "define('\''WP_REDIS_HOST'\'', '\''redis'\'');"
+        print "define('\''WP_REDIS_PORT'\'', 6379);"
+        print "define('\''WP_REDIS_SCHEME'\'', '\''tcp'\'');"
+        print "define('\''WP_CACHE'\'', true);"
+    }1' /var/www/html/wp-config.php > /var/www/html/wp-config.tmp && mv /var/www/html/wp-config.tmp /var/www/html/wp-config.php
+fi
+
+
+if ! wp plugin is-installed redis-cache --activate --allow-root; then
+    wp plugin install redis-cache --activate --allow-root --path="/var/www/html"
+    echo "⚙️ Installation de Redis..."
+fi
+
+echo "⚙️ Activation de Redis..."
+wp redis enable --allow-root
 
 # Lancer PHP-FPM
 php-fpm82 -F
