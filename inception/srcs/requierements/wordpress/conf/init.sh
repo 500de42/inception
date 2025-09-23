@@ -65,24 +65,33 @@ fi
 
 
 # Ajout config Redis dans wp-config.php si pas déjà présent
-if ! grep -q "WP_REDIS_HOST" /var/www/html/wp-config.php; then
-    awk '/require_once ABSPATH/{
-        print "/** Configuration Redis Cache */"
-        print "define('\''WP_REDIS_HOST'\'', '\''redis'\'');"
-        print "define('\''WP_REDIS_PORT'\'', 6379);"
-        print "define('\''WP_REDIS_SCHEME'\'', '\''tcp'\'');"
-        print "define('\''WP_CACHE'\'', true);"
-    }1' /var/www/html/wp-config.php > /var/www/html/wp-config.tmp && mv /var/www/html/wp-config.tmp /var/www/html/wp-config.php
-fi
+
+wp config set WP_REDIS_HOST redis --allow-root
+wp config set WP_REDIS_PORT 6379 --raw --allow-root
+wp config set WP_CACHE_KEY_SALT "kcharbon.42.fr" --allow-root
+wp config set WP_REDIS_CLIENT phpredis --allow-root
+wp config set WP_DEBUG true --raw --type=constant --allow-root
+wp config set WP_DEBUG_LOG true --raw --type=constant --allow-root
+wp config set WP_DEBUG_DISPLAY false --raw --type=constant --allow-root
+
+wp plugin install redis-cache --allow-root
+wp plugin update --all --allow-root
+# wp redis enable --allow-root
 
 
-if ! wp plugin is-installed redis-cache --activate --allow-root; then
-    wp plugin install redis-cache --activate --allow-root --path="/var/www/html"
+
+if ! wp plugin is-installed redis-cache --allow-root; then
+    wp plugin install redis-cache --allow-root --path="/var/www/html"
     echo "⚙️ Installation de Redis..."
+else 
+    echo "Redis already installed"
 fi
 
-echo "⚙️ Activation de Redis..."
-wp redis enable --allow-root
+if wp plugin is-active redis-cache --allow-root; then
+    wp redis enable --allow-root
+else
+    echo "⚠️ Plugin Redis pas encore actif, skip."
+fi
 
 # Lancer PHP-FPM
 php-fpm82 -F
