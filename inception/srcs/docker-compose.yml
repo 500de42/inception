@@ -67,6 +67,16 @@ services:
     ports:
       - "6379:6379"
 
+  server_ftp:
+    build: 
+      context: ./requierements/bonus/server_ftp
+      dockerfile: Dockerfile
+    restart : always
+    container_name: server_ftp
+    port:
+      - "21:21"
+    
+
 networks:
   inception-net:
     driver: bridge
