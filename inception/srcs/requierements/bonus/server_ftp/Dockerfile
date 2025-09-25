@@ -1,12 +1,12 @@
 FROM alpine:3.21
 
-RUN apk update && apk add --no-cache vsftpd lftp busybox-extras \
-    && adduser -h /var/www/html -s /bin/false ftpuser
+RUN apk update && apk add --no-cache vsftpd lftp busybox-extras
 
 COPY server_ftp.conf /etc/vsftpd.conf
+COPY entrypoint.sh /etc/entrypoint.sh
 
-ENTRYPOINT ["entrypoint.sh"]
+RUN chmod +x /etc/entrypoint.sh 
 
 EXPOSE 21 21000-21010
 
-CMD ["vsftpd", "/etc/vsftpd/vsftpd.conf"]
+CMD ["/etc/entrypoint.sh"]
