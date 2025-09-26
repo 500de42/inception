@@ -74,7 +74,7 @@ wp config set WP_DEBUG true --raw --type=constant --allow-root
 wp config set WP_DEBUG_LOG true --raw --type=constant --allow-root
 wp config set WP_DEBUG_DISPLAY false --raw --type=constant --allow-root
 
-wp plugin install redis-cache --allow-root
+# wp plugin install redis-cache --allow-root
 wp plugin update --all --allow-root
 # wp redis enable --allow-root
 
@@ -85,13 +85,25 @@ if ! wp plugin is-installed redis-cache --allow-root; then
     echo "⚙️ Installation de Redis..."
 else 
     echo "Redis already installed"
+    if ! wp plugin is-active redis-cache --allow-root --path="/var/www/html"; then
+        wp plugin activate redis-cache --allow-root --path="/var/www/html"
+        echo "⚙️ Plugin Redis activé."
+    fi
 fi
 
-if wp plugin is-active redis-cache --allow-root; then
-    wp redis enable --allow-root
-else
-    echo "⚠️ Plugin Redis pas encore actif, skip."
-fi
+echo "⏳ Vérification du serveur Redis..."
+until redis-cli -h redis ping | grep -q PONG; do
+    sleep 2
+done
+
+wp redis enable --allow-root --path="/var/www/html"
+echo "✅ Redis activé dans WordPress."
+
+# if wp plugin is-active redis-cache --allow-root; then
+#     wp redis enable --allow-root
+# else
+#     echo "⚠️ Plugin Redis pas encore actif, skip."
+# fi
 
 # Lancer PHP-FPM
 php-fpm82 -F
