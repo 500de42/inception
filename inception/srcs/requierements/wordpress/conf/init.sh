@@ -79,7 +79,6 @@ wp plugin update --all --allow-root
 # wp redis enable --allow-root
 
 
-
 if ! wp plugin is-installed redis-cache --allow-root; then
     wp plugin install redis-cache --allow-root --path="/var/www/html"
     echo "⚙️ Installation de Redis..."
@@ -98,12 +97,6 @@ done
 
 wp redis enable --allow-root --path="/var/www/html"
 echo "✅ Redis activé dans WordPress."
-
-# if wp plugin is-active redis-cache --allow-root; then
-#     wp redis enable --allow-root
-# else
-#     echo "⚠️ Plugin Redis pas encore actif, skip."
-# fi
 
 # Lancer PHP-FPM
 php-fpm82 -F

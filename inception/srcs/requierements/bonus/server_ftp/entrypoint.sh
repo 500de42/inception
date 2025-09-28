@@ -1,6 +1,17 @@
 #!/bin/sh
 
 set -e
+mkdir -p /var/run/vsftpd/empty
+
+
+# WP_URL="http://localhost"   # nom du service WordPress
+# echo "Waiting for WordPress to be ready..."
+# until  curl -s --connect-timeout 2 "$WP_URL" >/dev/null; do
+#     echo "WordPress not ready yet. Waiting 5s..."
+#     sleep 5
+# done
+# echo "WordPress is up! Starting FTP server..."
+
 
 if ! id ftpuser 2>dev/null; then
 
@@ -13,4 +24,4 @@ find /var/www/html -type f -exec chmod 640 {} \;
 
 fi
 
-vsftpd /etc/vsftpd.conf
+vsftpd /etc/vsftpd/vsftpd.conf

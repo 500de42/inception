@@ -71,6 +71,10 @@ services:
     build: 
       context: ./requierements/bonus/server_ftp
       dockerfile: Dockerfile
+    depends_on:
+      - wordpress
+    networks:
+      - inception-net
     restart : always
     container_name: server_ftp
     volumes:
