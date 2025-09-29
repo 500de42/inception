@@ -8,7 +8,7 @@ services:
       - "443:443"
     restart: always
     volumes:
-      - /home/kcharbon/data/wordpressData:/var/www/html:ro 
+      - wordpress:/var/www/html:ro 
     networks:
       - inception-net
     depends_on:
@@ -51,8 +51,6 @@ services:
       - inception-net
     volumes:
       - wordpress:/var/www/html
-    # ports:
-    #   - "${WP_PORT}:9000"
 
   redis:
     build:
@@ -83,19 +81,24 @@ services:
       - "21:21"
       - "21000-21010:21000-21010"
     
-  Amdminer:
+  adminer:
     build:
-      context: ./requierement/bonus/Adminer
+      context: ./requierements/bonus/Adminer
       dockerfile: Dockerfile
-    depend_on:
-      mariadb
+    depends_on:
+      - mariadb
+    container_name: adminer
+    networks:
+      - inception-net
     env_file: .env
     secrets:
       - DB_PASSWORD
       - DB_PASSWORD2
       - MARIADB_ROOT_PASSWORD
+    volumes:
+      - wordpress:/var/www/html
     ports:
-    - "8080"
+    - "9000"
 
 networks:
   inception-net:

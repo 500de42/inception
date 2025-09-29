@@ -1,9 +1,11 @@
 FROM alpine:3.21
 
-RUN apk update && apk add --no-cache php:8.2-apache mysqli 
+RUN apk update && apk add --no-cache php82-mysqli curl php82-fpm
 
-RUN curl -o /var/www/html/adminer/index.php https://www.adminer.org/latest.php
+COPY adminer.sh /etc/adminer.sh
 
-EXPOSE 8080
+RUN chmod +x /etc/adminer.sh
 
-CMD ["apache2-foreground"]
+EXPOSE 9000
+
+CMD ["./etc/adminer.sh"]
