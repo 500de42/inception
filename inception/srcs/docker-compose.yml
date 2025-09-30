@@ -112,6 +112,23 @@ services:
     networks:
       - inception-net
 
+  netdata:
+    build:
+      context: ./requierements/bonus/netdata
+      dockerfile: Dockerfile
+    restart: always
+    container_name: netdata
+    environment:
+      - NETDATA_ENABLE_STREAMING=no
+      - NETDATA_UPDATE_INTERVAL=2
+      - DOCKER_HOST=unix:///var/run/docker.sock
+      - DOCKER_ENABLE=true
+    volumes:
+      - netdata:/data
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    networks:
+      - inception-net
+
 networks:
   inception-net:
     driver: bridge
@@ -148,4 +165,10 @@ volumes:
     driver_opts:
       type: none
       device : /home/kcharbon/data/redis
+      o: bind
+  netdata:
+    driver: local
+    driver_opts:
+      type: none
+      device: /home/kcharbon/data/netdata
       o: bind
