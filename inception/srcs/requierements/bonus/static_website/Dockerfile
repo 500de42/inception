@@ -1,9 +1,8 @@
 FROM alpine:3.21
 
-RUN apk update && apk add --no-cache busybox_extras \
-    && mkdir -p /var/www/html/
+RUN apk update && apk add --no-cache busybox-extras && mkdir -p /var/www/html/static
 
-COPY website.html /var/www/html/index.html
+COPY website.html /var/www/html/static/index.html
 
 EXPOSE 8080
 

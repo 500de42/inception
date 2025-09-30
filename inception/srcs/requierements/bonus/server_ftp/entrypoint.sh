@@ -1,5 +1,7 @@
 #!/bin/sh
 
+FTP_PASSWORD=$(cat /run/secrets/FTP_PASSWORD)
+
 set -e
 mkdir -p /var/run/vsftpd/empty
 
@@ -21,7 +23,7 @@ echo "ftpuser:password" | chpasswd
 
 find /var/www/html -type d -exec chmod 750 {} \; > /dev/null 2>&1  
 find /var/www/html -type f -exec chmod 640 {} \; > /dev/null 2>&1  
-echo "Autorisation changed"
+echo "permission changed"
 
 fi
 

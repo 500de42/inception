@@ -62,8 +62,8 @@ services:
       - inception-net
     volumes:
       - redis:/data
-    ports:
-      - "6379:6379"
+    # ports:
+    #   - "6379:6379"
 
   server_ftp:
     build: 
@@ -77,9 +77,9 @@ services:
     container_name: server_ftp
     volumes:
       - wordpress:/var/www/html:ro
-    ports:
-      - "21:21"
-      - "21000-21010:21000-21010"
+    # ports:
+    #   - "21:21"
+    #   - "21000-21010:21000-21010"
     
   adminer:
     build:
@@ -87,6 +87,7 @@ services:
       dockerfile: Dockerfile
     depends_on:
       - mariadb
+    restart : always
     container_name: adminer
     networks:
       - inception-net
@@ -97,8 +98,19 @@ services:
       - MARIADB_ROOT_PASSWORD
     volumes:
       - wordpress:/var/www/html
-    ports:
-    - "9000"
+    # ports:
+    # - "9000"
+
+  static-site:
+    build:
+      context: ./requierements/bonus/static_website
+      dockerfile: Dockerfile
+    restart : always
+    container_name: static-site
+    secrets:
+      - FTP_PASSWORD
+    networks:
+      - inception-net
 
 networks:
   inception-net:
@@ -115,6 +127,8 @@ secrets:
     file: ../secrets/wp_password.txt
   WP_PASSWORD2:
     file: ../secrets/wp_password2.txt
+  FTP_PASSWORD:
+    file: ../secrets/ftp_password.txt
 
 volumes:
   mariadb_db:
