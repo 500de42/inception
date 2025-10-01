@@ -9,11 +9,11 @@ WP_PASSWORD=$(cat /run/secrets/WP_PASSWORD)
 WP_PASSWORD2=$(cat /run/secrets/WP_PASSWORD2)
 
 WP_PATH="/var/www/html"
-CONFIG_REDIS="/** Configuration Redis Cache */
-define('WP_REDIS_HOST', 'redis');
-define('WP_REDIS_PORT', 6379);
-define('WP_REDIS_SCHEME', 'tcp');
-define('WP_CACHE', true);"
+# CONFIG_REDIS="/** Configuration Redis Cache */
+# define('WP_REDIS_HOST', 'redis');
+# define('WP_REDIS_PORT', 6379);
+# define('WP_REDIS_SCHEME', 'tcp');
+# define('WP_CACHE', true);"
 
 chown -R www-data:www-data $WP_PATH
 
