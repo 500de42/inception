@@ -20,7 +20,7 @@ chown -R www-data:www-data $WP_PATH
 # Télécharger WordPress si pas déjà présent
 if [ ! -f /var/www/html/wp-load.php ]; then
     echo "⬇️ Téléchargement de WordPress..."
-    wget https://wordpress.org/latest.tar.gz -O /tmp/wordpress.tar.gz
+    wget https://wordpress.org/wordpress-6.8.3.tar.gz -O /tmp/wordpress.tar.gz
     tar -xzf /tmp/wordpress.tar.gz -C /var/www/html --strip-components=1
     rm /tmp/wordpress.tar.gz
     chown -R www-data:www-data /var/www/html

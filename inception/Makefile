@@ -8,6 +8,9 @@ up:
 down:
 	@$(COMPOSE) down
 
+downv:
+	@$(COMPOSE) down -v
+
 build:
 	@$(COMPOSE) build
 
