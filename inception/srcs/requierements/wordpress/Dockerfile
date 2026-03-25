@@ -7,7 +7,7 @@ RUN apk update && apk add --no-cache \
     mariadb-client \
     php82 php82-session php82-openssl php82-iconv php82-json php82-xml \
     php82-mbstring php82-mysqli php82-curl php82-phar php82-fpm \
-    php82-pecl-redis \
+    php82-pecl-redis php82-tokenizer php82-ctype redis\
     && adduser -S www-data -G www-data
 
 RUN ln -s /usr/bin/php82 /usr/bin/php

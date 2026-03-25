@@ -8,8 +8,7 @@ services:
       - "443:443"
     restart: always
     volumes:
-      # - ./nginx.conf:/etc/nginx/nginx.conf:ro
-      - /home/kcharbon/data/wordpressData:/var/www/html:ro 
+      - wordpress:/var/www/html:ro 
     networks:
       - inception-net
     depends_on:
@@ -36,6 +35,7 @@ services:
     env_file: .env
     depends_on:
       - mariadb
+      - redis
     build:
       context: ./requierements/wordpress
       dockerfile: Dockerfile
@@ -51,8 +51,78 @@ services:
       - inception-net
     volumes:
       - wordpress:/var/www/html
-    ports:
-      - "${WP_PORT}:9000"
+
+  redis:
+    build:
+      context: ./requierements/bonus/Redis
+      dockerfile: Dockerfile
+    restart: always
+    container_name: redis
+    networks:
+      - inception-net
+    volumes:
+      - redis:/data
+
+  server_ftp:
+    build: 
+      context: ./requierements/bonus/server_ftp
+      dockerfile: Dockerfile
+    depends_on:
+      - wordpress
+    networks:
+      - inception-net
+    restart : always
+    container_name: server_ftp
+    secrets:
+      - FTP_PASSWORD
+    volumes:
+      - wordpress:/var/www/html:ro
+    
+  adminer:
+    build:
+      context: ./requierements/bonus/Adminer
+      dockerfile: Dockerfile
+    depends_on:
+      - mariadb
+    restart : always
+    container_name: adminer
+    networks:
+      - inception-net
+    env_file: .env
+    secrets:
+      - DB_PASSWORD
+      - DB_PASSWORD2
+      - MARIADB_ROOT_PASSWORD
+    volumes:
+      - wordpress:/var/www/html
+
+  static-site:
+    build:
+      context: ./requierements/bonus/static_website
+      dockerfile: Dockerfile
+    restart : always
+    container_name: static-site
+    secrets:
+      - FTP_PASSWORD
+    networks:
+      - inception-net
+
+  netdata:
+    build:
+      context: ./requierements/bonus/netdata
+      dockerfile: Dockerfile
+    restart: always
+    container_name: netdata
+    environment:
+      - NETDATA_ENABLE_STREAMING=no
+      - NETDATA_UPDATE_INTERVAL=2
+      - DOCKER_HOST=unix:///var/run/docker.sock
+      - DOCKER_ENABLE=true
+    volumes:
+      - netdata:/data
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    networks:
+      - inception-net
 
 networks:
   inception-net:
@@ -69,6 +139,8 @@ secrets:
     file: ../secrets/wp_password.txt
   WP_PASSWORD2:
     file: ../secrets/wp_password2.txt
+  FTP_PASSWORD:
+    file: ../secrets/ftp_password.txt
 
 volumes:
   mariadb_db:
@@ -83,4 +155,15 @@ volumes:
       type: none
       device: /home/kcharbon/data/wordpressData
       o: bind
-#utiliser le dossier secret pour les mdp
+  redis:
+    driver: local
+    driver_opts:
+      type: none
+      device : /home/kcharbon/data/redis
+      o: bind
+  netdata:
+    driver: local
+    driver_opts:
+      type: none
+      device: /home/kcharbon/data/netdata
+      o: bind

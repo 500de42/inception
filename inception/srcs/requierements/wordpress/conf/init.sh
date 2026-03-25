@@ -9,15 +9,18 @@ WP_PASSWORD=$(cat /run/secrets/WP_PASSWORD)
 WP_PASSWORD2=$(cat /run/secrets/WP_PASSWORD2)
 
 WP_PATH="/var/www/html"
+# CONFIG_REDIS="/** Configuration Redis Cache */
+# define('WP_REDIS_HOST', 'redis');
+# define('WP_REDIS_PORT', 6379);
+# define('WP_REDIS_SCHEME', 'tcp');
+# define('WP_CACHE', true);"
 
 chown -R www-data:www-data $WP_PATH
-
-echo "DEBUG: MARIADB_USER=$MARIADB_USER, DB_PASSWORD=$DB_PASSWORD"
 
 # Télécharger WordPress si pas déjà présent
 if [ ! -f /var/www/html/wp-load.php ]; then
     echo "⬇️ Téléchargement de WordPress..."
-    wget https://wordpress.org/latest.tar.gz -O /tmp/wordpress.tar.gz
+    wget https://wordpress.org/wordpress-6.8.3.tar.gz -O /tmp/wordpress.tar.gz
     tar -xzf /tmp/wordpress.tar.gz -C /var/www/html --strip-components=1
     rm /tmp/wordpress.tar.gz
     chown -R www-data:www-data /var/www/html
@@ -59,6 +62,41 @@ if ! wp user get "$USER_WP2" --allow-root --path="/var/www/html" &>/dev/null; th
         --user_pass=$WP_PASSWORD2 \
         --allow-root
 fi
+
+
+# Ajout config Redis dans wp-config.php si pas déjà présent
+
+wp config set WP_REDIS_HOST redis --allow-root
+wp config set WP_REDIS_PORT 6379 --raw --allow-root
+wp config set WP_CACHE_KEY_SALT "kcharbon.42.fr" --allow-root
+wp config set WP_REDIS_CLIENT phpredis --allow-root
+wp config set WP_DEBUG true --raw --type=constant --allow-root
+wp config set WP_DEBUG_LOG true --raw --type=constant --allow-root
+wp config set WP_DEBUG_DISPLAY false --raw --type=constant --allow-root
+
+# wp plugin install redis-cache --allow-root
+wp plugin update --all --allow-root
+# wp redis enable --allow-root
+
+
+if ! wp plugin is-installed redis-cache --allow-root; then
+    wp plugin install redis-cache --allow-root --path="/var/www/html"
+    echo "⚙️ Installation de Redis..."
+else 
+    echo "Redis already installed"
+    if ! wp plugin is-active redis-cache --allow-root --path="/var/www/html"; then
+        wp plugin activate redis-cache --allow-root --path="/var/www/html"
+        echo "⚙️ Plugin Redis activé."
+    fi
+fi
+
+echo "⏳ Vérification du serveur Redis..."
+until redis-cli -h redis ping | grep -q PONG; do
+    sleep 2
+done
+
+wp redis enable --allow-root --path="/var/www/html"
+echo "✅ Redis activé dans WordPress."
 
 # Lancer PHP-FPM
 php-fpm82 -F
